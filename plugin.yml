@@ -1,0 +1,7 @@
+name: EventTao
+version: 0.0.1
+main: EventTao\Main
+api: '4.0'
+src-namespace-prefix: EventTao
+
+
