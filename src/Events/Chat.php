@@ -26,9 +26,9 @@ class Chat implements Listener{
         echo $name;
         $event->cancel();
         if ($name !== null){
-            Server::getInstance()->broadcastMessage("§8[§1Joueur§8] §8[§a{$name}§8] §c> §f{$msg}");
+            Server::getInstance()->broadcastMessage("§8[§1Joueur§8] §8[§a{$name}§8] §r{$player->getName()} §c> §f{$msg}");
         }else{
-            Server::getInstance()->broadcastMessage("§8[§1Joueur§8] §8[§aSansEquipe§8] §c> §f{$msg}");
+            Server::getInstance()->broadcastMessage("§8[§1Joueur§8] §8[§aSansEquipe§8] §r{$player->getName()} §c> §f{$msg}");
         }
 
     }

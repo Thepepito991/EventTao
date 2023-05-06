@@ -4,4 +4,8 @@ main: EventTao\Main
 api: 4.0.0
 src-namespace-prefix: EventTao
 
+permissions:
+  perm.admin:
+    default: op
+
 

@@ -43,6 +43,12 @@ class TeamCommand extends Command
 
                 $name = strtolower($args[1]);
                 $color = $args[2];
+                if ($color === "jaune" or $color === "rouge" or $color === "bleu" or $color === "vert"){
+
+                }else{
+                    $sender->sendMessage(TextFormat::RED."Veuillez choisir entre jaune, vert, rouge ou bleu");
+                    return true;
+                }
                 $displayName = implode(" ", array_slice($args, 3));
 
                 if($this->customTeams->getTeam($name) !== null) {
@@ -51,6 +57,7 @@ class TeamCommand extends Command
                 }
 
                 $team = $this->customTeams->createTeam($name, $color, $displayName);
+                $this->customTeams->addPlayerToTeam($sender->getName(), $team->getName());
                 $sender->sendMessage(TextFormat::GREEN . "L'équipe \"" . $team->getDisplayName() . "\" a été créée");
                 break;
 
@@ -74,7 +81,7 @@ class TeamCommand extends Command
                     return true;
                 }
 
-                $this->customTeams->addToTeam($sender, $team);
+                $this->customTeams->addPlayerToTeam($sender->getName(), $team->getName());
                 $sender->sendMessage(TextFormat::GREEN . "Vous avez rejoint l'équipe \"" . $team->getDisplayName() . "\"");
                 // Création d'un score pour le joueur dans l'équipe
 
@@ -88,7 +95,7 @@ class TeamCommand extends Command
                     return true;
                 }
 
-                $this->customTeams->removeFromTeam($sender, $team);
+                $this->customTeams->removePlayerFromTeam($sender->getName(), $team->getName());
                 $sender->sendMessage(TextFormat::GREEN . "Vous avez quitté l'équipe \"" . $team->getDisplayName() . "\"");
                 break;
 
@@ -98,7 +105,7 @@ class TeamCommand extends Command
                     return true;
                 }
 
-                if(!$sender->isOp()) {
+                if(!$sender->hasPermission("perm.admin")) {
                     $sender->sendMessage(TextFormat::RED . "Vous n'avez pas la permission de supprimer des équipes");
                     return true;
                 }
@@ -118,8 +125,16 @@ class TeamCommand extends Command
             case "list":
                 $teams = $this->customTeams->getAllTeams();
                 $sender->sendMessage(TextFormat::AQUA . "Liste des équipes :");
+
                 foreach($teams as $team) {
-                    $sender->sendMessage($team->getColor() . $team->getDisplayName() . TextFormat::GRAY . " (" . count($team->getPlayers()) . ")");
+                    $teamColor = $team->getColor();
+                    if (is_string($teamColor)) {
+                        $teamColor = $this->getChatColor($teamColor); // Utilisez votre méthode pour obtenir le code de couleur du chat
+                    } else {
+                        $teamColor = ""; // ou toute autre valeur par défaut appropriée si la couleur n'est pas une chaîne valide
+                    }
+                    $sender->sendMessage($teamColor . $team->getDisplayName() . TextFormat::GRAY . " (" . count($team->getPlayers()) . ")");
+
                 }
                 break;
 
@@ -142,5 +157,30 @@ class TeamCommand extends Command
         }
 
         return true;
+    }
+    /**
+     * Obtient le code de couleur du chat en fonction d'une chaîne de caractères de couleur.
+     *
+     * @param string $color
+     * @return string|null
+     */
+    public function getChatColor(string $color): ?string
+    {
+        $color = strtolower($color);
+
+        // Assigner le code de couleur correspondant
+        switch ($color) {
+            case "rouge":
+                return "§c";
+            case "vert":
+                return "§a";
+            case "bleu":
+                return "§9";
+            case "jaune":
+                return "§e";
+            // Ajoutez d'autres cas pour d'autres couleurs si nécessaire
+            default:
+                return null; // Retourne null si la couleur n'est pas reconnue
+        }
     }
 }

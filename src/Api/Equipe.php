@@ -5,12 +5,17 @@ namespace EventTao\Api;
 use pocketmine\player\Player;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
 
 class Equipe {
 
     private $teams = [];
+    private $equipes = [];
+
+
+
 
 
     public function createTeam(string $name, string $color, string $displayName) : Equipe2 {
@@ -24,9 +29,21 @@ class Equipe {
      * @return array
      */
     public function getAllTeams(): array {
-        // Code pour récupérer toutes les équipes de votre système
-        // Retournez les équipes dans un tableau
-        return []; // Remplacez par le code pour récupérer les équipes réelles
+        return array_keys($this->equipes);
+    }
+
+    /**
+     * Récupère les joueurs appartenant à l'équipe spécifiée.
+     *
+     * @param string $teamName
+     * @return array
+     */
+    public function getPlayers(string $teamName): array {
+        if (isset($this->equipes[$teamName])) {
+            return $this->equipes[$teamName];
+        } else {
+            return [];
+        }
     }
 
     public function getTeam(string $name) : ?Equipe2 {
@@ -49,12 +66,36 @@ class Equipe {
         return null;
     }
 
-    public function addToTeam( $player, Equipe2 $team) : void {
-        $team->addMember($player);
+    /**
+     * Ajoute un joueur à une équipe spécifiée.
+     *
+     * @param string $teamName
+     * @param string $playerName
+     */
+    public function addPlayerToTeam(string $playerName, string $teamName) {
+        if (!isset($this->equipes[$teamName])) {
+            $this->equipes[$teamName] = [];
+        }
+
+        $this->equipes[$teamName][] = $playerName;
     }
 
-    public function removeFromTeam(Player $player, Equipe2 $team) : void {
-        $team->removeMember($player);
+    /**
+     * Supprime un joueur d'une équipe spécifiée.
+     *
+     * @param string $teamName
+     * @param string $playerName
+     * @return bool
+     */
+    public function removePlayerFromTeam(string $playerName, string $teamName): bool {
+        if (isset($this->equipes[$teamName])) {
+            $index = array_search($playerName, $this->equipes[$teamName]);
+            if ($index !== false) {
+                unset($this->equipes[$teamName][$index]);
+                return true;
+            }
+        }
+        return false;
     }
 
 }
